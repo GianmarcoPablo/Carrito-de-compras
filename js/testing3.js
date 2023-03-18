@@ -7,7 +7,7 @@ let articulosCarrito = [];
 cargarEventListeners()
 function cargarEventListeners(){
     listaCursos.addEventListener("click",agregarCurso)
-    carrito.addEventListener("click",eliminarCurso)
+    contenedorCarrito.addEventListener("click",eliminarCurso)
     vaciarCarritoBtn.addEventListener("click",()=>{
         articulosCarrito = []
         limpiarHTML()
@@ -19,7 +19,6 @@ function agregarCurso(e){
     if(e.target.classList.contains("agregar-carrito")){
         const cursoSeleccionado = e.target.parentElement.parentElement
         leerDatosCurso(cursoSeleccionado)
-        console.log(cursoSeleccionado)
     }
 }
 
@@ -30,25 +29,24 @@ function eliminarCurso(e){
         if(cursoAEliminar.cantidad > 1){
             cursoAEliminar.cantidad --
         }else{
-            articulosCarrito = articulosCarrito.filter(curso=>curso.id !== cursoId)
-
+            articulosCarrito = articulosCarrito.filter(curso=> curso.id !== cursoId)
         }
         carritoHtml()
     }
 }
 
 function leerDatosCurso(curso){
-    const infoCursos = {
+    const infoCurso = {
         imagen: curso.querySelector("img").src,
         titulo: curso.querySelector("h4").textContent,
         precio: curso.querySelector(".precio span").textContent,
         id: curso.querySelector("a").getAttribute("data-id"),
         cantidad: 1
     }
-    const existe = articulosCarrito.some(curso=>curso.id === infoCursos.id)
+    const existe = articulosCarrito.some(curso => curso.id === infoCurso.id)
     if(existe){
         const cursos = articulosCarrito.map(curso=>{
-            if(curso.id === infoCursos.id){
+            if(curso.id === infoCurso.id){
                 curso.cantidad ++
                 return curso
             }else{
@@ -57,16 +55,16 @@ function leerDatosCurso(curso){
         })
         articulosCarrito = [...cursos]
     }else{
-        articulosCarrito = [...articulosCarrito, infoCursos]
+        articulosCarrito = [...articulosCarrito,infoCurso]
+
     }
-    console.log(articulosCarrito)
     carritoHtml()
 }
 
 function carritoHtml(){
     limpiarHTML()
     articulosCarrito.forEach(curso=>{
-        const {imagen,titulo,precio,od,cantidad} = curso
+        const {imagen, titulo, precio, id, cantidad} = curso
         const row = document.createElement("tr")
         row.innerHTML = `
             <td>
@@ -76,9 +74,8 @@ function carritoHtml(){
             <td>${precio}</td>
             <td>${cantidad}</td>
             <td>
-                <a href=# class="borrar-curso" data-id="${curso.id}">X</a>
+                <a href=# class="borrar-curso" data-id="${id}">X</a>
             </td>
-
         `
         contenedorCarrito.appendChild(row)
     })
