@@ -7,6 +7,7 @@ let articulosCarrito = [];
 cargarEventListeners()
 function cargarEventListeners(){
     listaCursos.addEventListener("click",agregarCurso)
+    carrito.addEventListener("click",eliminarCurso)
     vaciarCarritoBtn.addEventListener("click",()=>{
         articulosCarrito = []
         limpiarHTML()
@@ -17,12 +18,26 @@ function agregarCurso(e){
     e.preventDefault()
     if(e.target.classList.contains("agregar-carrito")){
         const cursoSeleccionado = e.target.parentElement.parentElement
-        leerDatosCurso(cursoSeleccionado)
+        leerDatosCuors(cursoSeleccionado)
+        console.log(cursoSeleccionado)
     }
 }
 
-function leerDatosCurso(curso){
-    const infoCursos = {
+function eliminarCurso(e){
+    if(e.target.classList.contains("borrar-curso")){
+        const cursoId = e.target.getAttribute("data-id")
+        const cursoAEliminar = articulosCarrito.find(curso=>curso.id === cursoId)
+        if(cursoAEliminar.cantidad > 1){
+            cursoAEliminar.cantidad --
+        }else{
+            articulosCarrito = articulosCarrito.filter(curso=>curso.id !== cursoId)
+        }
+        carritoHTML()
+    }
+}   
+
+function leerDatosCuors(curso){
+    const infoCurso = {
         imagen: curso.querySelector("img").src,
         titulo: curso.querySelector("h4").textContent,
         precio: curso.querySelector(".precio span").textContent,
@@ -30,10 +45,10 @@ function leerDatosCurso(curso){
         cantidad: 1
     }
 
-    const exite = articulosCarrito.some(curso=>curso.id === infoCursos.id)
+    const exite = articulosCarrito.some(curso=>curso.id === infoCurso.id)
     if(exite){
         const cursos = articulosCarrito.map(curso=>{
-            if(curso.id === infoCursos.id){
+            if(curso.id === infoCurso.id){
                 curso.cantidad ++
                 return curso
             }else{
@@ -42,10 +57,11 @@ function leerDatosCurso(curso){
         })
         articulosCarrito = [...cursos]
     }else{
-        articulosCarrito = [...articulosCarrito,infoCursos]
+        articulosCarrito = [...articulosCarrito,infoCurso]
     }
     carritoHTML()
 }
+
 
 function carritoHTML(){
     limpiarHTML()
