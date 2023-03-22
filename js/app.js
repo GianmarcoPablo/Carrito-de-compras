@@ -1,4 +1,3 @@
-//variables
 const carrito = document.querySelector("#carrito")
 const contenedorCarrito = document.querySelector("#lista-carrito tbody")
 const vaciarCarritoBtn = document.querySelector("#vaciar-carrito")
@@ -7,8 +6,12 @@ let articulosCarrito = [];
 
 cargarEventListeners()
 function cargarEventListeners(){
-    listaCursos.addEventListener("click", agregarCurso) 
+    listaCursos.addEventListener("click",agregarCurso)
     carrito.addEventListener("click",eliminarCurso)
+    vaciarCarritoBtn.addEventListener("click",()=>{
+        articulosCarrito = []
+        limpiarHTML()
+    })
 }
 
 function agregarCurso(e){
@@ -20,38 +23,39 @@ function agregarCurso(e){
 }
 
 function eliminarCurso(e){
-    if(e.target.classList.contains(".borrar-curso")){
+    if(e.target.classList.contains("borrar-curso")){
         const cursoId = e.target.getAttribute("data-id")
-        articulosCarrito = articulosCarrito.filter(curso=>curso.id === cursoId)
+        const cursoAEliminar = articulosCarrito.find(curso=>curso.id === cursoId)
+        if(cursoAEliminar.cantidad > 1){
+            cursoAEliminar.cantidad --
+        }else{
+            articulosCarrito = articulosCarrito.filter(curso=>curso.id !== cursoId)
+        }
         carritoHTML()
     }
 }
 
 function leerDatosCurso(curso){
-    const infoCursos = {
+    const infoCurso = {
         imagen: curso.querySelector("img").src,
         titulo: curso.querySelector("h4").textContent,
         precio: curso.querySelector(".precio span").textContent,
         id: curso.querySelector("a").getAttribute("data-id"),
         cantidad: 1
     }
-
-    //revisa si un elemento ya existe en el carrito
-    //some te permite iterar en un arreglo de objetos y verificar rsi un elemento exite en el
-    const existe = articulosCarrito.some(curso=> curso.id === infoCursos.id)
-    if(existe){
-        //actualizamos la cantidad
+    const exite = articulosCarrito.some(curso=>curso.id === infoCurso.id)
+    if(exite){
         const cursos = articulosCarrito.map(curso=>{
-            if(curso.id === infoCursos.id){
-                curso.cantidad++
-                return curso //retorna el objecto actualizado
+            if(curso.id === infoCurso.id){
+                curso.cantidad ++
+                return curso
             }else{
-                return curso //los objetos que no son los duplicados
+                return curso
             }
         })
         articulosCarrito = [...cursos]
-    }else{
-        articulosCarrito = [...articulosCarrito, infoCursos]
+    }else{  
+        articulosCarrito = [...articulosCarrito,infoCurso]
     }
     carritoHTML()
 }
@@ -59,26 +63,26 @@ function leerDatosCurso(curso){
 function carritoHTML(){
     limpiarHTML()
     articulosCarrito.forEach(curso=>{
-        const {imagen,titulo,precio,cantidad,id} = curso
+        const {imagen,titulo,precio,id,cantidad } = curso
         const row = document.createElement("tr")
         row.innerHTML = `
-            <td>
-                <img src="${imagen}" width="100"> 
-            </td>
-            <td>${titulo}</td>
-            <td>${precio}</td>
-            <td>${cantidad}</td>
-            <td>
-                <a href="#" class="borrar-curso" data-id="${id}">X</a>
-            </td>
-        `
+        <td>
+            <img src="${imagen}" width="100">
+        </td>
+        <td>${titulo}</td>
+        <td>${precio}</td>
+        <td>${cantidad}</td>
+        <td>
+            <a href="#" class="borrar-curso" data-id="${id}"> X </a>
+        </td>
+    `
         contenedorCarrito.appendChild(row)
     })
 }
-
 
 function limpiarHTML(){
     while(contenedorCarrito.firstChild){
         contenedorCarrito.removeChild(contenedorCarrito.firstChild)
     }
 }
+
