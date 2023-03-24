@@ -10,7 +10,11 @@ function cargarEventListeners(){
     carrito.addEventListener("click",eliminarCurso)
     vaciarCarritoBtn.addEventListener("click",()=>{
         articulosCarrito = []
-        limpiarHTML()
+        limpiarCarrito()
+    })
+    document.addEventListener("DOMContentLoaded",()=>{
+        articulosCarrito = JSON.parse(localStorage.getItem("carrito")) || []
+        carritoHTML()
     })
 }
 
@@ -43,9 +47,10 @@ function leerDatosCurso(curso){
         id: curso.querySelector("a").getAttribute("data-id"),
         cantidad: 1
     }
+
     const exite = articulosCarrito.some(curso=>curso.id === infoCurso.id)
     if(exite){
-        const cursos = articulosCarrito.map(curso=>{
+        const cursos = articulosCarrito.map(curso=> {
             if(curso.id === infoCurso.id){
                 curso.cantidad ++
                 return curso
@@ -54,16 +59,16 @@ function leerDatosCurso(curso){
             }
         })
         articulosCarrito = [...cursos]
-    }else{  
+    }else{
         articulosCarrito = [...articulosCarrito,infoCurso]
     }
     carritoHTML()
 }
 
 function carritoHTML(){
-    limpiarHTML()
+    limpiarCarrito()
     articulosCarrito.forEach(curso=>{
-        const {imagen,titulo,precio,id,cantidad } = curso
+        const {imagen,titulo,precio,id,cantidad} = curso
         const row = document.createElement("tr")
         row.innerHTML = `
         <td>
@@ -73,16 +78,20 @@ function carritoHTML(){
         <td>${precio}</td>
         <td>${cantidad}</td>
         <td>
-            <a href="#" class="borrar-curso" data-id="${id}"> X </a>
+            <a href="#" class="borrar-curso" data-id="${id}">X</a>
         </td>
-    `
+        `
         contenedorCarrito.appendChild(row)
     })
+    sincronizarStorage()
 }
 
-function limpiarHTML(){
+function sincronizarStorage(){
+    localStorage.setItem("carrito",JSON.stringify(articulosCarrito))
+}
+
+function limpiarCarrito(){
     while(contenedorCarrito.firstChild){
         contenedorCarrito.removeChild(contenedorCarrito.firstChild)
     }
 }
-
