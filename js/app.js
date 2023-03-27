@@ -10,11 +10,11 @@ function cargarEventListeners(){
     carrito.addEventListener("click",eliminarCurso)
     vaciarCarritoBtn.addEventListener("click",()=>{
         articulosCarrito = []
-        limpiarCarrito()
+        limpiarHTML()
     })
     document.addEventListener("DOMContentLoaded",()=>{
-        articulosCarrito = JSON.parse(localStorage.getItem("carrito")) || []
-        carritoHTML()
+        articulosCarrito = JSON.parse(localStorage.getItem("cursos")) || []
+        CarritoHTML()
     })
 }
 
@@ -22,24 +22,30 @@ function agregarCurso(e){
     e.preventDefault()
     if(e.target.classList.contains("agregar-carrito")){
         const cursoSeleccionado = e.target.parentElement.parentElement
-        leerDatosCurso(cursoSeleccionado)
+        leerDatosCuros(cursoSeleccionado)
+        console.log(cursoSeleccionado)
     }
 }
 
 function eliminarCurso(e){
     if(e.target.classList.contains("borrar-curso")){
         const cursoId = e.target.getAttribute("data-id")
-        const cursoAEliminar = articulosCarrito.find(curso=>curso.id === cursoId)
+        const cursoAEliminar = articulosCarrito.find(curso => curso.id === cursoId)
         if(cursoAEliminar.cantidad > 1){
             cursoAEliminar.cantidad --
         }else{
             articulosCarrito = articulosCarrito.filter(curso=>curso.id !== cursoId)
         }
-        carritoHTML()
+        CarritoHTML()
+        sincronizarLocalStorage()
     }
 }
 
-function leerDatosCurso(curso){
+function sincronizarLocalStorage(){
+    localStorage.setItem("cursos",JSON.stringify(articulosCarrito))
+}
+
+function leerDatosCuros(curso){
     const infoCurso = {
         imagen: curso.querySelector("img").src,
         titulo: curso.querySelector("h4").textContent,
@@ -47,10 +53,9 @@ function leerDatosCurso(curso){
         id: curso.querySelector("a").getAttribute("data-id"),
         cantidad: 1
     }
-
-    const exite = articulosCarrito.some(curso=>curso.id === infoCurso.id)
-    if(exite){
-        const cursos = articulosCarrito.map(curso=> {
+    const existe = articulosCarrito.some(curso=>curso.id === infoCurso.id)
+    if(existe){
+        const cursos = articulosCarrito.map(curso=>{
             if(curso.id === infoCurso.id){
                 curso.cantidad ++
                 return curso
@@ -62,35 +67,31 @@ function leerDatosCurso(curso){
     }else{
         articulosCarrito = [...articulosCarrito,infoCurso]
     }
-    carritoHTML()
+    CarritoHTML()
+    console.log(articulosCarrito)
 }
 
-function carritoHTML(){
-    limpiarCarrito()
+function CarritoHTML(){
+    limpiarHTML()
     articulosCarrito.forEach(curso=>{
-        const {imagen,titulo,precio,id,cantidad} = curso
+        const {imagen,titulo,precio,id,cantidad}= curso
         const row = document.createElement("tr")
         row.innerHTML = `
-        <td>
-            <img src="${imagen}" width="100">
-        </td>
-        <td>${titulo}</td>
-        <td>${precio}</td>
-        <td>${cantidad}</td>
-        <td>
-            <a href="#" class="borrar-curso" data-id="${id}">X</a>
-        </td>
+            <td>
+                <img src="${imagen}" width="100">
+            </td>
+            <td>${titulo}</td>
+            <td>${precio}</td>
+            <td>${cantidad}</td>
+            <td>
+                <a href="#" class="borrar-curso" data-id="${id}">X</a>
+            </td>
         `
         contenedorCarrito.appendChild(row)
     })
-    sincronizarStorage()
 }
 
-function sincronizarStorage(){
-    localStorage.setItem("carrito",JSON.stringify(articulosCarrito))
-}
-
-function limpiarCarrito(){
+function limpiarHTML(){
     while(contenedorCarrito.firstChild){
         contenedorCarrito.removeChild(contenedorCarrito.firstChild)
     }
