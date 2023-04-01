@@ -21,6 +21,7 @@ function agregarCurso(e){
         leerDatosCuros(cursoSeleccionado)
     }
 }
+function eliminarCurso(){}
 
 function leerDatosCuros(curso){
     const infoCursos = {
