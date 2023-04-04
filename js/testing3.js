@@ -21,7 +21,18 @@ function agregarCurso(e){
         leerDatosCuros(cursoSeleccionado)
     }
 }
-function eliminarCurso(){}
+function eliminarCurso(e){
+    if(e.target.classList.contains("borrar-curso")){
+        const cursoId = e.target.getAttribute("data-id")
+        const cursoAEliminar = articulosCarrito.find(curso=>curso.id === cursoId)
+        if(cursoAEliminar.cantidad > 1){
+            cursoAEliminar.cantidad--
+        }else{
+            articulosCarrito = articulosCarrito.filter(curso=>curso.id !== cursoId)
+        }
+        carritoHTML()
+    }
+}
 
 function leerDatosCuros(curso){
     const infoCursos = {
@@ -36,6 +47,7 @@ function leerDatosCuros(curso){
         const cursos = articulosCarrito.map(curso=>{
             if(curso.id === infoCursos.id){
                 curso.cantidad ++
+                return curso
             }else{
                 return curso
             }
@@ -50,17 +62,17 @@ function leerDatosCuros(curso){
 function carritoHTML(){
     limpiarHTML()
     articulosCarrito.forEach(curso=>{
-        const {imagen,titulo,precio,cantidad,id} = curso
+        const {imagen,titulo,precio,id,cantidad} = curso
         const row = document.createElement("tr")
         row.innerHTML = `
             <td>
-                <img src="${imagen}" width="100"> 
+                <img src="${imagen}" width="100">
             </td>
             <td>${titulo}</td>
             <td>${precio}</td>
             <td>${cantidad}</td>
             <td>
-                <a href="#" class="borrar-curso" data-id="${id}">X</a>
+                <a href="#" class="borrar-curso" data-id="${id}"> X </a>
             </td>
         `
         contenedorCarrito.appendChild(row)
